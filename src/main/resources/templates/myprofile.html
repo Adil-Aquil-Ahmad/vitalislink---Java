@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | VitalisLink</title>
+    <link rel="shortcut icon" href="/Images/VITALISLINK LOGO LIGHT.png" type="image/x-icon">
+    <link rel="stylesheet" href="/css/user.css">
+    <link rel="stylesheet" href="/css/myprofile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <header>
+        <img src="/Images/VITALISLINK LOGO LIGHT2.png" alt="VitalisLink Logo" style="opacity: 100%; border-radius: 5px;">
+        <button class="hamburger" onclick="toggleMenu()" aria-label="Menu" aria-expanded="false">
+            <div class="hamburger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </button>        
+        <nav id="navMenu">
+            <ul class="menu">
+                <li><a th:href="@{/}">Home</a></li>
+                <li>
+                    <a th:if="${session.userEmail != null}" th:href="@{/donor/register}">Donor Registration</a>
+                    <a th:unless="${session.userEmail != null}" th:href="@{/login}" onclick="alert('Please log in to register as a donor');">Donor Registration</a>
+                </li>
+                <li th:if="${session.isAdmin != true}">
+                    <a th:href="@{/dashboard}">Dashboard</a>
+                </li>
+                <li th:if="${session.isAdmin}">
+                    <a th:href="@{/admin/dashboard}">Admin Dashboard</a>
+                </li>
+                <li><a th:href="@{/about}">About</a></li>
+                <li>
+                    <div th:if="${session.userEmail != null}">
+                        <button onclick="toggleDropdown()" class="dropbtn" th:text="${session.userEmail.substring(0,1)}">U</button>
+                        <div id="dropdownContent" class="dropdown-content">
+                            <br>
+                            <a th:href="@{/profile}" th:text="'Welcome, ' + ${session.userEmail}">Welcome, User</a>
+                            <a th:href="@{/profile}">My Profile</a>
+                            <a th:href="@{/my-bookings}">My Bookings</a>
+                            <a th:href="@{/logout}">Logout</a>
+                        </div>
+                    </div>
+                    <a th:unless="${session.userEmail != null}" th:href="@{/login}">Login</a>
+                </li>
+            </ul>
+        </nav>        
+    </header>
+    
+    <!-- Add this right after the header closing tag -->
+    <!-- Mobile Menu - Separate from header -->
+    <div class="mobile-menu-container">
+        <button class="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Toggle mobile menu" aria-expanded="false">
+            <div class="hamburger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </button>
+        
+        <div id="mobileNavPanel" class="mobile-nav-panel">
+            <div class="mobile-nav-header">
+                <img src="/Images/VITALISLINK LOGO LIGHT2.png" alt="VitalisLink Logo" class="mobile-logo">
+                <button class="close-btn" onclick="toggleMobileMenu()" aria-label="Close menu">×</button>
+            </div>
+            
+            <ul class="mobile-nav-links">
+                <li><a th:href="@{/}">Home</a></li>
+                <li>
+                    <a th:if="${session.userEmail != null}" th:href="@{/donor/register}">Donor Registration</a>
+                    <a th:unless="${session.userEmail != null}" th:href="@{/login}" onclick="alert('Please log in to register as a donor');">Donor Registration</a>
+                </li>
+                <li th:if="${session.isAdmin != true}">
+                    <a th:href="@{/dashboard}">Dashboard</a>
+                </li>
+                <li th:if="${session.isAdmin}">
+                    <a th:href="@{/admin/dashboard}">Admin Dashboard</a>
+                </li>
+                <li><a th:href="@{/about}">About</a></li>
+                <li th:if="${session.userEmail == null}">
+                    <a th:href="@{/login}">Login</a>
+                </li>
+                
+                <!-- Profile section with square button -->
+                <li th:if="${session.userEmail != null}" class="profile-section">
+                    <button onclick="toggleMobileDropdown()" class="mobile-profile-btn" th:text="${session.userEmail.substring(0,1)}">U</button>
+                    <div id="mobileDropdown" class="mobile-dropdown">
+                        <div class="welcome-text" th:text="'Welcome, ' + ${session.userEmail}">Welcome, User</div>
+                        <a th:href="@{/profile}">My Profile</a>
+                        <a th:href="@{/my-bookings}">My Bookings</a>
+                        <a th:href="@{/logout}">Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="flash-messages">
+        <div th:if="${success}" class="success" th:text="${success}"></div>
+        <div th:if="${error}" class="danger" th:text="${error}"></div>
+        <div th:if="${info}" class="info" th:text="${info}"></div>
+    </div>
+
+    <main>
+        <section class="profile-register-section">
+            <div class="profile-login-form">
+                <h2>My Profile</h2>
+                
+                <form method="POST" th:action="@{/profile/update}" th:object="${user}">
+                    <div class="input-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" name="fullName" th:value="${user.fullName}" readonly>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" th:value="${user.email}" readonly>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="phone">Phone</label>
+                        <input type="text" id="phone" name="phone" th:value="${user.phone}" readonly>
+                    </div>
+                    
+                    <!-- Added Blood Group Selection -->
+                    <div class="input-group">
+                        <label for="bloodGroup">Blood Group</label>
+                        <select id="bloodGroup" name="bloodGroup" th:value="${user.bloodGroup}" readonly disabled>
+                            <option value="">Select Blood Group</option>
+                            <option value="A+" th:selected="${user.bloodGroup == 'A+'}">A+</option>
+                            <option value="A-" th:selected="${user.bloodGroup == 'A-'}">A-</option>
+                            <option value="B+" th:selected="${user.bloodGroup == 'B+'}">B+</option>
+                            <option value="B-" th:selected="${user.bloodGroup == 'B-'}">B-</option>
+                            <option value="AB+" th:selected="${user.bloodGroup == 'AB+'}">AB+</option>
+                            <option value="AB-" th:selected="${user.bloodGroup == 'AB-'}">AB-</option>
+                            <option value="O+" th:selected="${user.bloodGroup == 'O+'}">O+</option>
+                            <option value="O-" th:selected="${user.bloodGroup == 'O-'}">O-</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="address">Address</label>
+                        <input type="text" id="address" name="address" th:value="${user.address}" readonly>
+                    </div>
+                
+                    <div class="input-group inline-group">
+                        <div>
+                            <label for="city">City</label>
+                            <input type="text" id="city" name="city" th:value="${user.city}" readonly>
+                        </div>
+                        <div>
+                            <label for="state">State</label>
+                            <input type="text" id="state" name="state" th:value="${user.state}" readonly>
+                        </div>
+                        <div>
+                            <label for="zipCode">Zip Code</label>
+                            <input type="text" id="zipCode" name="zipCode" th:value="${user.zipCode}" readonly>
+                        </div>
+                    </div>
+                    
+                    <!-- Hidden fields for latitude and longitude -->
+                    <input type="hidden" id="latitude" name="latitude" th:value="${user.latitude}">
+                    <input type="hidden" id="longitude" name="longitude" th:value="${user.longitude}">
+                
+                    <button type="button" class="profile-button edit-btn">Edit</button>
+                    <button type="submit" class="profile-button save-btn" style="display: none;">Save</button>
+                </form>
+                
+                <div class="action-buttons">
+                    <a th:href="@{/profile/change-password}" class="change-password-btn">Change Password</a>
+                </div>
+            </div>
+        </section>        
+    </main>
+    
+    <script src="/js/myprofile.js"></script>
+    <script src="/js/user.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrY95-79pt8782DEB6Wa05bZB13f0oQeQ&libraries=places"></script>
+    <script src="/js/maps.js"></script>
+
+</body>
+</html>

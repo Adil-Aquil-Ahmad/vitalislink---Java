@@ -1,0 +1,4 @@
+"id","email","password","fullName","phone","address","city","state","zipCode","bloodGroup","isAdmin","createdAt","updatedAt"
+"1","admin@vitalislink.com","$2a$10$Lsiro/pEoIMjr6l2G9o24eOQSNK3qk6EZYteqLg/izSQM7ENMZcd.","System Administrator","","","","","","","true","2025-04-28T04:07:06.413463100","2025-04-28T04:07:06.414467"
+"2","adilaquil786@gmail.com","$2a$10$Gfto4K9Zl0Qq2RL99GZqkOceDEt.hucYCyV2xlIgXUSCD3oHtZPnG","Adil Aquil Ahmad","8700966009","Bennett University, TechZone 2, Greater Noida, Uttar Pradesh, India","Greater Noida","Uttar Pradesh","201310","AB+","false","","2025-04-28T04:25:54.590350900"
+"3","goel12ayan@gmail.com","$2a$10$v0IrzGEzHDk8rwfCFjUYJ.hc9SX7GrheYpr6fTmD6i/vDMJ03fQlm","ayan","",,,,,,"false","2025-04-28T16:03:09.103523500","2025-04-28T16:03:09.103523500"

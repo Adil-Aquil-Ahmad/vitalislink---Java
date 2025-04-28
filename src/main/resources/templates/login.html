@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In | VitalisLink</title>
+    <link rel="shortcut icon" href="/Images/VITALISLINK LOGO LIGHT.png" type="image/x-icon">
+    <link rel="stylesheet" href="/css/user.css">
+    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <header>
+        <img src="/Images/VITALISLINK LOGO LIGHT2.png" alt="VitalisLink Logo" style="opacity: 100%; border-radius: 5px;">
+        <button class="hamburger" onclick="toggleMenu()" aria-label="Menu" aria-expanded="false">
+            <div class="hamburger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </button>        
+        <nav id="navMenu">
+            <ul class="menu">
+                <li><a th:href="@{/}">Home</a></li>
+                <li>
+                    <a th:if="${session.userEmail != null}" th:href="@{/donor/register}">Donor Registration</a>
+                    <a th:unless="${session.userEmail != null}" th:href="@{/login}" onclick="alert('Please log in to register as a donor');">Donor Registration</a>
+                </li>
+                <li th:if="${session.isAdmin != true}">
+                    <a th:href="@{/dashboard}">Dashboard</a>
+                </li>
+                <li th:if="${session.isAdmin}">
+                    <a th:href="@{/admin/dashboard}">Admin Dashboard</a>
+                </li>
+                <li><a th:href="@{/about}">About</a></li>
+                <li>
+                    <div th:if="${session.userEmail != null}">
+                        <button onclick="toggleDropdown()" class="dropbtn" th:text="${session.userEmail.substring(0,1)}">U</button>
+                        <div id="dropdownContent" class="dropdown-content">
+                            <br>
+                            <a th:href="@{/profile}" th:text="'Welcome, ' + ${session.userEmail}">Welcome, User</a>
+                            <a th:href="@{/profile}">My Profile</a>
+                            <a th:href="@{/my-bookings}">My Bookings</a>
+                            <a th:href="@{/logout}">Logout</a>
+                        </div>
+                    </div>
+                    <a th:unless="${session.userEmail != null}" th:href="@{/login}">Login</a>
+                </li>
+            </ul>
+        </nav>        
+    </header>
+    
+    <!-- Add this right after the header closing tag -->
+    <!-- Mobile Menu - Separate from header -->
+    <div class="mobile-menu-container">
+        <button class="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Toggle mobile menu" aria-expanded="false">
+            <div class="hamburger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </button>
+        
+        <div id="mobileNavPanel" class="mobile-nav-panel">
+            <div class="mobile-nav-header">
+                <img src="/Images/VITALISLINK LOGO LIGHT2.png" alt="VitalisLink Logo" class="mobile-logo">
+                <button class="close-btn" onclick="toggleMobileMenu()" aria-label="Close menu">×</button>
+            </div>
+            
+            <ul class="mobile-nav-links">
+                <li><a th:href="@{/}">Home</a></li>
+                <li>
+                    <a th:if="${session.userEmail != null}" th:href="@{/donor/register}">Donor Registration</a>
+                    <a th:unless="${session.userEmail != null}" th:href="@{/login}" onclick="alert('Please log in to register as a donor');">Donor Registration</a>
+                </li>
+                <li th:if="${session.isAdmin != true}">
+                    <a th:href="@{/dashboard}">Dashboard</a>
+                </li>
+                <li th:if="${session.isAdmin}">
+                    <a th:href="@{/admin/dashboard}">Admin Dashboard</a>
+                </li>
+                <li><a th:href="@{/about}">About</a></li>
+                <li th:if="${session.userEmail == null}">
+                    <a th:href="@{/login}">Login</a>
+                </li>
+                
+                <!-- Profile section with square button -->
+                <li th:if="${session.userEmail != null}" class="profile-section">
+                    <button onclick="toggleMobileDropdown()" class="mobile-profile-btn" th:text="${session.userEmail.substring(0,1)}">U</button>
+                    <div id="mobileDropdown" class="mobile-dropdown">
+                        <div class="welcome-text" th:text="'Welcome, ' + ${session.userEmail}">Welcome, User</div>
+                        <a th:href="@{/profile}">My Profile</a>
+                        <a th:href="@{/my-bookings}">My Bookings</a>
+                        <a th:href="@{/logout}">Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <main>
+        <section class="login-section">
+            <div class="login-form">
+                <h2>Sign In</h2>
+                
+                <div class="flash-messages">
+                    <div th:if="${error}" class="danger" th:text="${error}"></div>
+                    <div th:if="${success}" class="success" th:text="${success}"></div>
+                    <div th:if="${info}" class="info" th:text="${info}"></div>
+                </div>
+        
+                <form method="POST" th:action="@{/login}"> 
+                    <div class="input-group">
+                        <label for="email">Email</label>
+                        <input type="email" name="email" id="email" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" name="password" id="password" required>
+                    </div>
+                    
+                    <button type="submit">Sign In</button>
+                    <div class="more">
+                        <br><p class="dnt">Don't have an account?</p>
+                        <button type="button" class="signup-btn" onclick="window.location.href='/register'">Sign Up</button><br><br>
+                        <p class="liw">Sign in with</p>
+                    </div>
+                    <div class="icon">
+                        <a href="#"><ion-icon name="logo-google"></ion-icon></a>
+                        <a href="#"><ion-icon name="logo-instagram"></ion-icon></a>
+                        <a href="#"><ion-icon name="logo-linkedin"></ion-icon></a>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
+    <script src="/js/user.js"></script>
+    <script>
+        // Log form submission
+        document.querySelector('form').addEventListener('submit', function(e) {
+            console.log('Form submitted', {
+                email: document.getElementById('email').value,
+                passwordLength: document.getElementById('password').value.length
+            });
+        });
+    </script>
+</body>
+</html>

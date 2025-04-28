@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VitalisLink | Dashboard</title>
+    <link rel="stylesheet" href="/css/user.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="shortcut icon" href="/Images/VITALISLINK LOGO LIGHT.png" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <img src="/Images/VITALISLINK LOGO LIGHT2.png" alt="VitalisLink Logo" style="opacity: 100%; border-radius: 5px;">
+        <button class="hamburger" onclick="toggleMenu()" aria-label="Menu" aria-expanded="false">
+            <div class="hamburger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </button>        
+        <nav id="navMenu">
+            <ul class="menu">
+                <li><a th:href="@{/}">Home</a></li>
+                <li>
+                    <a th:if="${session.userEmail != null}" th:href="@{/donor/register}">Donor Registration</a>
+                    <a th:unless="${session.userEmail != null}" th:href="@{/login}" onclick="alert('Please log in to register as a donor');">Donor Registration</a>
+                </li>
+                <li th:if="${session.isAdmin != true}">
+                    <a th:href="@{/dashboard}">Dashboard</a>
+                </li>
+                <li th:if="${session.isAdmin}">
+                    <a th:href="@{/admin/dashboard}">Admin Dashboard</a>
+                </li>
+                <li><a th:href="@{/about}">About</a></li>
+                <li>
+                    <div th:if="${session.userEmail != null}">
+                        <button onclick="toggleDropdown()" class="dropbtn" th:text="${session.userEmail.substring(0,1)}">U</button>
+                        <div id="dropdownContent" class="dropdown-content">
+                            <br>
+                            <a th:href="@{/profile}" th:text="'Welcome, ' + ${session.userEmail}">Welcome, User</a>
+                            <a th:href="@{/profile}">My Profile</a>
+                            <a th:href="@{/my-bookings}">My Bookings</a>
+                            <a th:href="@{/logout}">Logout</a>
+                        </div>
+                    </div>
+                    <a th:unless="${session.userEmail != null}" th:href="@{/login}">Login</a>
+                </li>
+            </ul>
+        </nav>        
+    </header>
+    
+    <!-- Add this right after the header closing tag -->
+    <!-- Mobile Menu - Separate from header -->
+    <div class="mobile-menu-container">
+        <button class="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Toggle mobile menu" aria-expanded="false">
+            <div class="hamburger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </button>
+        
+        <div id="mobileNavPanel" class="mobile-nav-panel">
+            <div class="mobile-nav-header">
+                <img src="/Images/VITALISLINK LOGO LIGHT2.png" alt="VitalisLink Logo" class="mobile-logo">
+                <button class="close-btn" onclick="toggleMobileMenu()" aria-label="Close menu">×</button>
+            </div>
+            
+            <ul class="mobile-nav-links">
+                <li><a th:href="@{/}">Home</a></li>
+                <li>
+                    <a th:if="${session.userEmail != null}" th:href="@{/donor/register}">Donor Registration</a>
+                    <a th:unless="${session.userEmail != null}" th:href="@{/login}" onclick="alert('Please log in to register as a donor');">Donor Registration</a>
+                </li>
+                <li th:if="${session.isAdmin != true}">
+                    <a th:href="@{/dashboard}">Dashboard</a>
+                </li>
+                <li th:if="${session.isAdmin}">
+                    <a th:href="@{/admin/dashboard}">Admin Dashboard</a>
+                </li>
+                <li><a th:href="@{/about}">About</a></li>
+                <li th:if="${session.userEmail == null}">
+                    <a th:href="@{/login}">Login</a>
+                </li>
+                
+                <!-- Profile section with square button -->
+                <li th:if="${session.userEmail != null}" class="profile-section">
+                    <button onclick="toggleMobileDropdown()" class="mobile-profile-btn" th:text="${session.userEmail.substring(0,1)}">U</button>
+                    <div id="mobileDropdown" class="mobile-dropdown">
+                        <div class="welcome-text" th:text="'Welcome, ' + ${session.userEmail}">Welcome, User</div>
+                        <a th:href="@{/profile}">My Profile</a>
+                        <a th:href="@{/my-bookings}">My Bookings</a>
+                        <a th:href="@{/logout}">Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <main>
+        <section class="dashboard-section">
+            <h2>Completed Blood Donations</h2>
+
+            <div class="sort-controls">
+                <div class="filter-sort">
+                    <label for="sortOption">Sort By: </label>
+                    <select id="sortOption" onchange="sortTable()">
+                        <option value="bloodGroup">Blood Group</option>
+                        <option value="location">Location</option>
+                        <option value="donation-date">Donation Date</option>
+                    </select>
+            
+                    <label for="bloodGroupFilter">Filter by Blood Group: </label>
+                    <select id="bloodGroupFilter" onchange="filterBloodGroup()">
+                        <option value="">All</option>
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                    </select>
+            
+                    <label for="locationFilter">Filter by Location: </label>
+                    <select id="locationFilter" onchange="filterLocation()">
+                        <option value="">All</option>
+                        <option value="Delhi">Delhi</option>
+                        <option value="Mumbai">Mumbai</option>
+                        <option value="Kolkata">Kolkata</option>
+                        <option value="Bangalore">Bangalore</option>
+                        <option value="Chennai">Chennai</option>
+                        <option value="Hyderabad">Hyderabad</option>
+                    </select>
+                </div>
+            </div>
+                            
+            <div class="flash-messages">
+                <div th:if="${error}" class="danger" th:text="${error}"></div>
+                <div th:if="${success}" class="success" th:text="${success}"></div>
+                <div th:if="${warning}" class="warning" th:text="${warning}"></div>
+            </div>
+
+            <!-- Table -->
+            <table id="donationTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Blood Group</th>
+                        <th>Donation Date</th>
+                        <th>City</th>
+                        <th>State</th>
+                        <th>Distance</th>
+                        <th>Contact</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="donor : ${donors}" class="person-row" 
+                        th:attr="data-blood-group=${donor.bloodGroup}, 
+                                data-location=${donor.state},
+                                data-donation-date=${donor.lastDonationDate},
+                                data-latitude=${donor.latitude}, 
+                                data-longitude=${donor.longitude}">
+                        <td th:text="${donor.fullName}">Donor Name</td>
+                        <td th:text="${donor.bloodGroup}">O+</td>
+                        <td th:text="${donor.lastDonationDate != null ? #temporals.format(donor.lastDonationDate, 'yyyy-MM-dd') : 'N/A'}">2025-04-15</td>
+                        <td th:text="${donor.city}">Mumbai</td>
+                        <td th:text="${donor.state}">Maharashtra</td>
+                        <td class="distance-cell">--</td>
+                        <td>
+                            <a th:href="@{/donors/contact/{id}(id=${donor.id})}" class="contact-btn">Contact</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 VitalisLink. All Rights Reserved.</p>
+    </footer>
+
+    <script src="/js/dashboard.js"></script>
+    <script src="/js/user.js"></script>
+    <script th:inline="javascript">
+        function haversine(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+        }
+
+        function filterNearestDonors() {
+            const userLatitude = [[${userLatitude}]];
+            const userLongitude = [[${userLongitude}]];
+            const userBloodGroup = [[${userBloodGroup}]];
+
+            const rows = document.querySelectorAll("#donationTable .person-row");
+            let donors = [];
+
+            rows.forEach(function(row) {
+                const donorLatitude = parseFloat(row.getAttribute("data-latitude"));
+                const donorLongitude = parseFloat(row.getAttribute("data-longitude"));
+                const donorBloodGroup = row.getAttribute("data-blood-group");
+
+                let distance = 0;
+                if (userLatitude && userLongitude && !isNaN(donorLatitude) && !isNaN(donorLongitude)) {
+                    distance = haversine(userLatitude, userLongitude, donorLatitude, donorLongitude);
+                }
+
+                donors.push({
+                    row: row,
+                    distance: distance,
+                    bloodGroup: donorBloodGroup
+                });
+            });
+
+            donors.sort(function(a, b) {
+                if (a.bloodGroup === userBloodGroup && b.bloodGroup !== userBloodGroup) {
+                    return -1;
+                } else if (a.bloodGroup !== userBloodGroup && b.bloodGroup === userBloodGroup) {
+                    return 1;
+                } else {
+                    return a.distance - b.distance;
+                }
+            });
+
+            donors.forEach(function(donor) {
+                donor.row.querySelector(".distance-cell").textContent = donor.distance.toFixed(2) + " km";
+                document.querySelector("#donationTable tbody").appendChild(donor.row);
+            });
+        }
+        
+        // Run when DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            filterNearestDonors();
+        });
+    </script>
+</body>
+</html>

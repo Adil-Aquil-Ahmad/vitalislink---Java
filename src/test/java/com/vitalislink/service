@@ -1,0 +1,33 @@
+VitalisLink/
+│
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   ├── com/
+│   │   │   │   └── vitalislink/
+│   │   │   │       ├── app/
+│   │   │   │       │   └── App.java
+│   │   │   │       ├── routes/
+│   │   │   │       │   └── Routes.java
+│   │   │   │       ├── user/
+│   │   │   │       │   └── User.java
+│   │   │   │       ├── existingdonors/
+│   │   │   │       │   └── Donors.java
+│   │   │   │       └── newdonors/
+│   │   │   │           └── NewDonors.java
+│   │   │   └── resources/
+│   │   │       └── application.properties
+│   │   └── webapp/
+│   │       └── WEB-INF/
+│   │           └── web.xml
+│   └── test/
+│       └── java/
+│           └── com/
+│               └── vitalislink/
+│                   └── AppTest.java
+│
+├── lib/
+│   └── (external libraries, if any)
+│
+├── README.md
+└── pom.xml (if using Maven) or build.gradle (if using Gradle)

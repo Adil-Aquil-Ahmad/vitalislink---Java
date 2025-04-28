@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmation | VitalisLink</title>
+    <link rel="stylesheet" href="/css/user.css">
+    <link rel="stylesheet" href="/css/donor_booking.css">
+
+</head>
+<body>
+    <header>
+        <img src="/Images/VITALISLINK LOGO LIGHT2.png" alt="VitalisLink Logo" style="opacity: 100%; border-radius: 5px;">
+        <button class="hamburger" onclick="toggleMenu()" aria-label="Menu" aria-expanded="false">
+            <div class="hamburger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </button>        
+        <nav id="navMenu">
+            <ul class="menu">
+                <li><a th:href="@{/}">Home</a></li>
+                <li>
+                    <a th:if="${session.userEmail != null}" th:href="@{/donor/register}">Donor Registration</a>
+                    <a th:unless="${session.userEmail != null}" th:href="@{/login}" onclick="alert('Please log in to register as a donor');">Donor Registration</a>
+                </li>
+                <li th:if="${session.isAdmin != true}">
+                    <a th:href="@{/dashboard}">Dashboard</a>
+                </li>
+                <li th:if="${session.isAdmin}">
+                    <a th:href="@{/admin/dashboard}">Admin Dashboard</a>
+                </li>
+                <li><a th:href="@{/about}">About</a></li>
+                <li>
+                    <div th:if="${session.userEmail != null}">
+                        <button onclick="toggleDropdown()" class="dropbtn" th:text="${session.userEmail.substring(0,1)}">U</button>
+                        <div id="dropdownContent" class="dropdown-content">
+                            <br>
+                            <a th:href="@{/profile}" th:text="'Welcome, ' + ${session.userEmail}">Welcome, User</a>
+                            <a th:href="@{/profile}">My Profile</a>
+                            <a th:href="@{/my-bookings}">My Bookings</a>
+                            <a th:href="@{/logout}">Logout</a>
+                        </div>
+                    </div>
+                    <a th:unless="${session.userEmail != null}" th:href="@{/login}">Login</a>
+                </li>
+            </ul>
+        </nav>        
+    </header>
+    
+    <!-- Add this right after the header closing tag -->
+    <!-- Mobile Menu - Separate from header -->
+    <div class="mobile-menu-container">
+        <button class="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Toggle mobile menu" aria-expanded="false">
+            <div class="hamburger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </button>
+        
+        <div id="mobileNavPanel" class="mobile-nav-panel">
+            <div class="mobile-nav-header">
+                <img src="/Images/VITALISLINK LOGO LIGHT2.png" alt="VitalisLink Logo" class="mobile-logo">
+                <button class="close-btn" onclick="toggleMobileMenu()" aria-label="Close menu">×</button>
+            </div>
+            
+            <ul class="mobile-nav-links">
+                <li><a th:href="@{/}">Home</a></li>
+                <li>
+                    <a th:if="${session.userEmail != null}" th:href="@{/donor/register}">Donor Registration</a>
+                    <a th:unless="${session.userEmail != null}" th:href="@{/login}" onclick="alert('Please log in to register as a donor');">Donor Registration</a>
+                </li>
+                <li th:if="${session.isAdmin != true}">
+                    <a th:href="@{/dashboard}">Dashboard</a>
+                </li>
+                <li th:if="${session.isAdmin}">
+                    <a th:href="@{/admin/dashboard}">Admin Dashboard</a>
+                </li>
+                <li><a th:href="@{/about}">About</a></li>
+                <li th:if="${session.userEmail == null}">
+                    <a th:href="@{/login}">Login</a>
+                </li>
+                
+                <!-- Profile section with square button -->
+                <li th:if="${session.userEmail != null}" class="profile-section">
+                    <button onclick="toggleMobileDropdown()" class="mobile-profile-btn" th:text="${session.userEmail.substring(0,1)}">U</button>
+                    <div id="mobileDropdown" class="mobile-dropdown">
+                        <div class="welcome-text" th:text="'Welcome, ' + ${session.userEmail}">Welcome, User</div>
+                        <a th:href="@{/profile}">My Profile</a>
+                        <a th:href="@{/my-bookings}">My Bookings</a>
+                        <a th:href="@{/logout}">Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="flash-messages">
+        <div th:if="${successMessage}" class="success" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}" class="danger" th:text="${errorMessage}"></div>
+        <div th:if="${infoMessage}" class="info" th:text="${infoMessage}"></div>
+    </div>
+
+    <main class="booking-section">
+        <div class="booking-details-container">
+            <div class="qr-code">
+                <!-- Display QR code from base64 (generated on demand) -->
+                <img th:if="${booking.qrCodeBase64 != null && booking.qrCodeBase64 != ''}" 
+                     th:src="'data:image/png;base64,' + ${booking.qrCodeBase64}" alt="QR Code">
+                
+                <!-- Show message if no QR code available -->
+                <div th:if="${booking.qrCodeBase64 == null || booking.qrCodeBase64 == ''}" 
+                     class="no-qr">
+                    QR Code Not Available
+                </div>
+            </div>
+            <div class="booking-info">
+                <h2>Donor Booking Details</h2>
+                <p><strong>Booking ID:</strong> <span th:text="${booking.id}"></span></p>
+                <p><strong>Full Name:</strong> <span th:text="${booking.donorName}"></span></p>
+                <p><strong>Email:</strong> <span th:text="${booking.donorEmail}"></span></p>
+                <p><strong>Phone:</strong> <span th:text="${booking.donorPhone}"></span></p>
+                <p><strong>Blood Group:</strong> <span th:text="${booking.bloodGroup}"></span></p>
+                <p><strong>Date:</strong> <span th:text="${#temporals.format(booking.appointmentDate, 'yyyy-MM-dd')}"></span></p>
+                <p><strong>Time:</strong> <span th:text="${#temporals.format(booking.appointmentTime, 'HH:mm')}"></span></p>
+                <p><strong>Location:</strong> <span th:text="${booking.appointmentLocation}"></span></p>
+                <p><strong>Status:</strong> <span th:text="${booking.status}"></span></p>
+                <p th:if="${booking.notes}"><strong>Notes:</strong> <span th:text="${booking.notes}"></span></p>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button id="button1" onclick="window.print()">Print</button>
+            <button id="button2" onclick="saveAsPDF()">Save as PDF</button>
+            <button id="button3" onclick="sendEmail()">Send Email</button>
+        </div>
+    </main>
+
+    <script>
+        function saveAsPDF() {
+            window.print();
+        }
+    </script>
+
+    <script src="/js/user.js"></script>
+    <script th:inline="javascript">
+        document.addEventListener("DOMContentLoaded", () => {
+            const referrer = document.referrer;
+            const donorRegistrationPage = "/donor/register";
+
+            if (referrer.includes(donorRegistrationPage)) {
+                sendEmail();
+            }
+        });
+
+        function sendEmail() {
+            // Show sending indicator
+            showFlashMessage("Sending email with PDF attachment...", "info");
+            
+            const bookingId = [[${booking.id}]];
+            const apiUrl = `/api/booking/${bookingId}/send-email`;
+            
+            fetch(apiUrl)
+                .then(response => {
+                    if (response.ok) {
+                        return response.json().catch(() => ({ success: true }));
+                    } else {
+                        return response.text().then(msg => {
+                            throw new Error(msg || "Failed to send email");
+                        });
+                    }
+                })
+                .then(data => {
+                    showFlashMessage("Email sent successfully with PDF attachment!", "success");
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showFlashMessage("Failed to send email: " + (error.message || "Unknown error"), "danger");
+                });
+        }
+
+        function showFlashMessage(message, category) {
+            const flashMessagesContainer = document.querySelector(".flash-messages");
+
+            const messageDiv = document.createElement("div");
+            messageDiv.className = category;
+            messageDiv.textContent = message;
+
+            flashMessagesContainer.appendChild(messageDiv);
+
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

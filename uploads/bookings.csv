@@ -1,0 +1,23 @@
+"id","userId","donorName","donorEmail","donorPhone","bloodGroup","appointmentDate","appointmentTime","appointmentLocation","qrCodeContent","status","notes","createdAt","updatedAt"
+"2","2","Arifa Aquil","adilaquil786@gmail.com","8700966009","B+","2025-05-01","10:00","Bennett University, TechZone 2, Greater Noida, Uttar Pradesh, India","VitalisLink Blood Donation Booking
+
+Name: Arifa Aquil
+Email: adilaquil786@gmail.com
+Phone: 8700966009
+Blood Group: B+
+Date: 2025-05-01
+Time: 10:00
+Location: Bennett University, TechZone 2, Greater Noida, Uttar Pradesh, India
+Status: Confirmed
+","Confirmed","","2025-04-28T05:43:34.409247600","2025-04-28T16:30:28.306143400"
+"3","3","ayan","goel12ayan@gmail.com","7827627927","AB-","2025-05-01","10:00","Main Blood Bank Center","VitalisLink Blood Donation Booking
+
+Name: ayan
+Email: goel12ayan@gmail.com
+Phone: 7827627927
+Blood Group: AB-
+Date: 2025-05-01
+Time: 10:00
+Location: Main Blood Bank Center
+Status: Pending
+","Pending","","2025-04-28T16:04:03.838712200","2025-04-28T16:30:28.310432800"

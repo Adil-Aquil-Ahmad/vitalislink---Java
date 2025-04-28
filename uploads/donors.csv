@@ -1,0 +1,3 @@
+"id","fullName","email","phone","address","city","state","zipCode","bloodGroup","lastDonationDate","weight","age","gender","hasMedicalConditions","medicalConditionsDetails","isEligible","eligibilityReason","createdAt","updatedAt"
+"1","Adil Aquil Ahmad","adilaquil786@gmail.com","8700966009","Bennett University, TechZone 2, Greater Noida, Uttar Pradesh, India","Greater Noida","Uttar Pradesh","India","AB+","2025-05-01","","","","","","true","","2025-04-28T06:04:51.366881600","2025-04-28T06:04:51.366881600"
+"2","ayan","goel12ayan@gmail.com","7827627927","Bennett University, TechZone 2, Greater Noida, Uttar Pradesh, India","Greater Noida","Uttar Pradesh","201310","AB-","","59.0","19","Male","false","","true",,"2025-04-28T16:04:03.835486200","2025-04-28T16:04:03.835486200"

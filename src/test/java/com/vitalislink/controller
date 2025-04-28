@@ -1,0 +1,29 @@
+VitalisLinkJava/
+│
+├── src/                          # Source files
+│   ├── main/                     # Main application source files
+│   │   ├── java/                 # Java source files
+│   │   │   ├── com/              # Package structure
+│   │   │   │   └── vitalislink/   # VitalisLink package
+│   │   │   │       ├── app/      # Main application class
+│   │   │   │       ├── routes/   # Route handling classes
+│   │   │   │       ├── user/     # User management classes
+│   │   │   │       ├── donors/   # Donor management classes
+│   │   │   │       └── utils/    # Utility classes
+│   │   │
+│   │   └── resources/            # Resource files (e.g., HTML, CSS, images)
+│   │       ├── templates/        # HTML templates
+│   │       └── static/           # Static files (CSS, JS, images)
+│   │
+│   └── test/                     # Test files
+│       └── java/                 # Test source files
+│           └── com/              # Package structure for tests
+│               └── vitalislink/   # VitalisLink test package
+│
+├── lib/                          # External libraries (e.g., JAR files)
+│
+├── build/                        # Build output directory
+│
+├── README.md                     # Project documentation
+│
+└── pom.xml                       # Maven configuration file (if using Maven)

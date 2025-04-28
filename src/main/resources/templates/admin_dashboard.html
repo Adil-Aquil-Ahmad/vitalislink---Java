@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VitalisLink | Admin Dashboard</title>
+    <link rel="stylesheet" href="/css/user.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin_dashboard.css">
+    <link rel="shortcut icon" href="/Images/VITALISLINK LOGO LIGHT.png" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <img src="/Images/VITALISLINK LOGO LIGHT2.png" alt="VitalisLink Logo" style="opacity: 100%; border-radius: 5px;">
+        <button class="hamburger" onclick="toggleMenu()" aria-label="Menu" aria-expanded="false">
+            <div class="hamburger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </button>        
+        <nav id="navMenu">
+            <ul class="menu">
+                <li><a th:href="@{/}">Home</a></li>
+                <li>
+                    <a th:if="${session.userEmail != null}" th:href="@{/donor/register}">Donor Registration</a>
+                    <a th:unless="${session.userEmail != null}" th:href="@{/login}" onclick="alert('Please log in to register as a donor');">Donor Registration</a>
+                </li>
+                <li th:if="${session.isAdmin != true}">
+                    <a th:href="@{/dashboard}">Dashboard</a>
+                </li>
+                <li th:if="${session.isAdmin}">
+                    <a th:href="@{/admin/dashboard}">Admin Dashboard</a>
+                </li>
+                <li><a th:href="@{/about}">About</a></li>
+                <li>
+                    <div th:if="${session.userEmail != null}">
+                        <button onclick="toggleDropdown()" class="dropbtn" th:text="${session.userEmail.substring(0,1)}">U</button>
+                        <div id="dropdownContent" class="dropdown-content">
+                            <br>
+                            <a th:href="@{/profile}" th:text="'Welcome, ' + ${session.userEmail}">Welcome, User</a>
+                            <a th:href="@{/profile}">My Profile</a>
+                            <a th:href="@{/my-bookings}">My Bookings</a>
+                            <a th:href="@{/logout}">Logout</a>
+                        </div>
+                    </div>
+                    <a th:unless="${session.userEmail != null}" th:href="@{/login}">Login</a>
+                </li>
+            </ul>
+        </nav>        
+    </header>
+    
+    <!-- Add this right after the header closing tag -->
+    <!-- Mobile Menu - Separate from header -->
+    <div class="mobile-menu-container">
+        <button class="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Toggle mobile menu" aria-expanded="false">
+            <div class="hamburger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </button>
+        
+        <div id="mobileNavPanel" class="mobile-nav-panel">
+            <div class="mobile-nav-header">
+                <img src="/Images/VITALISLINK LOGO LIGHT2.png" alt="VitalisLink Logo" class="mobile-logo">
+                <button class="close-btn" onclick="toggleMobileMenu()" aria-label="Close menu">×</button>
+            </div>
+            
+            <ul class="mobile-nav-links">
+                <li><a th:href="@{/}">Home</a></li>
+                <li>
+                    <a th:if="${session.userEmail != null}" th:href="@{/donor/register}">Donor Registration</a>
+                    <a th:unless="${session.userEmail != null}" th:href="@{/login}" onclick="alert('Please log in to register as a donor');">Donor Registration</a>
+                </li>
+                <li th:if="${session.isAdmin != true}">
+                    <a th:href="@{/dashboard}">Dashboard</a>
+                </li>
+                <li th:if="${session.isAdmin}">
+                    <a th:href="@{/admin/dashboard}">Admin Dashboard</a>
+                </li>
+                <li><a th:href="@{/about}">About</a></li>
+                <li th:if="${session.userEmail == null}">
+                    <a th:href="@{/login}">Login</a>
+                </li>
+                
+                <!-- Profile section with square button -->
+                <li th:if="${session.userEmail != null}" class="profile-section">
+                    <button onclick="toggleMobileDropdown()" class="mobile-profile-btn" th:text="${session.userEmail.substring(0,1)}">U</button>
+                    <div id="mobileDropdown" class="mobile-dropdown">
+                        <div class="welcome-text" th:text="'Welcome, ' + ${session.userEmail}">Welcome, User</div>
+                        <a th:href="@{/profile}">My Profile</a>
+                        <a th:href="@{/my-bookings}">My Bookings</a>
+                        <a th:href="@{/logout}">Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <main>
+        <div class="dashboard-tabs">
+            <button class="tab-button active" onclick="showTab('bookings-section')">Pending/Confirmed Appointments</button>
+            <button class="tab-button" onclick="showTab('donors-section')">Completed Donations</button>
+        </div>
+
+        <div class="flash-messages">
+            <div th:if="${error}" class="danger" th:text="${error}"></div>
+            <div th:if="${success}" class="success" th:text="${success}"></div>
+            <div th:if="${warning}" class="warning" th:text="${warning}"></div>
+        </div>
+
+        <!-- BLOOD DONATION APPOINTMENTS SECTION -->
+        <section id="bookings-section" class="dashboard-section">
+            <h2>Blood Donation Appointments</h2>
+
+            <div class="sort-controls">
+                <div class="filter-sort">
+                    <label for="bookingStatusFilter">Filter by Status: </label>
+                    <select id="bookingStatusFilter" onchange="filterBookingStatus()">
+                        <option value="">All</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+            
+                    <label for="bookingDateFilter">Filter by Date: </label>
+                    <input type="date" id="bookingDateFilter" onchange="filterBookingDate()">
+                    
+                    <a th:href="@{/bookings/export/pdf}" class="export-btn">Export to PDF</a>
+                </div>
+            </div>
+
+            <!-- Bookings Table -->
+            <table id="bookingsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Donor Name</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Blood Group</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="booking : ${bookings}" class="booking-row" 
+                        th:attr="data-status=${booking.status}, 
+                                data-date=${booking.appointmentDate}">
+                        <td th:text="${booking.id}">1</td>
+                        <td th:text="${booking.user != null ? booking.user.email : 'N/A'}">user@example.com</td>
+                        <td th:text="${booking.donorName}">Donor Name</td>
+                        <td th:text="${booking.donorPhone}">9876543210</td>
+                        <td th:text="${booking.donorEmail}">donor@example.com</td>
+                        <td th:text="${booking.bloodGroup}">O+</td>
+                        <td th:text="${booking.appointmentDate}">2025-05-01</td>
+                        <td th:text="${booking.appointmentTime}">10:00</td>
+                        <td th:text="${booking.appointmentLocation}">Address</td>
+                        <td th:text="${booking.status}" th:class="${'status-' + booking.status.toLowerCase()}">Pending</td>
+                        <td>
+                            <a th:href="@{/booking/{id}(id=${booking.id})}" class="action-btn view-btn">View</a>
+                            <div class="status-buttons">
+                                <form th:if="${booking.status != 'Confirmed'}" th:action="@{/admin/booking/{id}/confirm(id=${booking.id})}" method="POST" style="display:inline;">
+                                    <button type="submit" class="action-btn confirm-btn">Confirm</button>
+                                </form>
+                                <form th:if="${booking.status != 'Completed'}" th:action="@{/admin/booking/{id}/complete(id=${booking.id})}" method="POST" style="display:inline;">
+                                    <button type="submit" class="action-btn complete-btn">Complete</button>
+                                </form>
+                                <form th:if="${booking.status != 'Cancelled'}" th:action="@{/admin/booking/{id}/cancel(id=${booking.id})}" method="POST" style="display:inline;">
+                                    <button type="submit" class="action-btn cancel-btn">Cancel</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${bookings.empty}">
+                        <td colspan="11" class="no-data">No bookings found</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- DONORS SECTION -->
+        <section id="donors-section" class="dashboard-section" style="display:none;">
+            <h2>Completed Blood Donations</h2>
+
+            <div class="sort-controls">
+                <div class="filter-sort">
+                    <label for="sortOption">Sort By: </label>
+                    <select id="sortOption" onchange="sortTable()">
+                        <option value="bloodGroup">Blood Group</option>
+                        <option value="location">Location</option>
+                    </select>
+            
+                    <label for="bloodGroupFilter">Filter by Blood Group: </label>
+                    <select id="bloodGroupFilter" onchange="filterBloodGroup()">
+                        <option value="">All</option>
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                    </select>
+            
+                    <label for="locationFilter">Filter by Location: </label>
+                    <select id="locationFilter" onchange="filterLocation()">
+                        <option value="">All</option>
+                        <option value="Delhi">Delhi</option>
+                        <option value="Mumbai">Mumbai</option>
+                        <option value="Kolkata">Kolkata</option>
+                        <option value="Bangalore">Bangalore</option>
+                        <option value="Chennai">Chennai</option>
+                        <option value="Hyderabad">Hyderabad</option>
+                    </select>
+                    
+                    <a th:href="@{/donors/export/pdf}" class="export-btn">Export to PDF</a>
+                </div>
+            </div>
+
+            <!-- Donors Table -->
+            <table id="donationTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Blood Group</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Address</th>
+                        <th>City</th>
+                        <th>State</th>
+                        <th>Zip Code</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="donor : ${donors}" class="person-row" 
+                        th:attr="data-blood-group=${donor.bloodGroup}, 
+                                data-location=${donor.state}">
+                        <td th:text="${donor.fullName}">Donor Name</td>
+                        <td th:text="${donor.age}">25</td>
+                        <td th:text="${donor.bloodGroup}">O+</td>
+                        <td th:text="${donor.phone}">9876543210</td>
+                        <td th:text="${donor.email}">donor@example.com</td>
+                        <td th:text="${donor.address}">123 Main St</td>
+                        <td th:text="${donor.city}">Mumbai</td>
+                        <td th:text="${donor.state}">Maharashtra</td>
+                        <td th:text="${donor.zipCode}">400001</td>
+                        <td>
+                            <a th:href="@{/donor/{id}(id=${donor.id})}" class="action-btn view-btn">View</a>
+                            <a th:href="@{/donor/edit/{id}(id=${donor.id})}" class="action-btn edit-btn">Edit</a>
+                            <a th:href="@{/donor/delete/{id}(id=${donor.id})}" class="action-btn delete-btn" 
+                               onclick="return confirm('Are you sure you want to delete this donor?')">Delete</a>
+                        </td>
+                    </tr>
+                    <tr th:if="${donors.empty}">
+                        <td colspan="10" class="no-data">No donors found</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 VitalisLink. All Rights Reserved.</p>
+    </footer>
+
+    <script src="/js/dashboard.js"></script>
+    <script src="/js/user.js"></script>
+    <script>
+        // Tab switching functionality
+        function showTab(tabId) {
+            // Hide all sections
+            document.querySelectorAll('.dashboard-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show the selected section
+            document.getElementById(tabId).style.display = 'block';
+            
+            // Update active tab button
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+        }
+        
+        // Booking status filtering
+        function filterBookingStatus() {
+            const status = document.getElementById('bookingStatusFilter').value.toLowerCase();
+            const rows = document.querySelectorAll('#bookingsTable tbody tr.booking-row');
+            
+            rows.forEach(row => {
+                const rowStatus = row.getAttribute('data-status').toLowerCase();
+                if (status === '' || rowStatus === status) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+        
+        // Booking date filtering
+        function filterBookingDate() {
+            const date = document.getElementById('bookingDateFilter').value;
+            const rows = document.querySelectorAll('#bookingsTable tbody tr.booking-row');
+            
+            rows.forEach(row => {
+                const rowDate = row.getAttribute('data-date');
+                if (date === '' || rowDate === date) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
