@@ -6,6 +6,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -30,7 +31,8 @@ public class DataMigration implements CommandLineRunner {
     }
     
     private void migrateBookingsCSV() {
-        ClassPathResource resource = new ClassPathResource("static/data/bookings.csv");
+        Resource resource = new FileSystemResource("uploads/bookings.csv");
+
         
         try {
             // Read the CSV file
